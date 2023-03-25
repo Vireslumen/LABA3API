@@ -20,7 +20,6 @@ public class CurrencyExchangeController : ControllerBase
             // Инициализация нового списка валютных объектов
             List<Currency> currencies = new List<Currency>();
 
-            int i21 = 0;
             // Определение строки подключения SQL
             string connectionString = @"Data Source=.\SQLEXPRESS;Database=LABA3;Integrated Security=SSPI";
 
