@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+п»їusing System.Data.SqlClient;
 using System.Text.Json;
 using LABA3API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,48 +10,48 @@ public class CurrencyExchangeController : ControllerBase
 {
 
     [HttpGet]
-    public string Get(string currenciesName, DateTime startDate, DateTime endDate)// Получение запроса GET
+    public string Get(string currenciesName, DateTime startDate, DateTime endDate)// РџРѕР»СѓС‡РµРЅРёРµ Р·Р°РїСЂРѕСЃР° GET
     {
         try
         {
-            // Вставка курсов обмена из API в базу данных
+            // Р’СЃС‚Р°РІРєР° РєСѓСЂСЃРѕРІ РѕР±РјРµРЅР° РёР· API РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…
             ExchangeRate.InsertExchangeRates(startDate, endDate);
 
-            // Инициализация нового списка валютных объектов
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РЅРѕРІРѕРіРѕ СЃРїРёСЃРєР° РІР°Р»СЋС‚РЅС‹С… РѕР±СЉРµРєС‚РѕРІ
             List<Currency> currencies = new List<Currency>();
 
-            // Определение строки подключения SQL
+            // РћРїСЂРµРґРµР»РµРЅРёРµ СЃС‚СЂРѕРєРё РїРѕРґРєР»СЋС‡РµРЅРёСЏ SQL
             string connectionString = @"Data Source=.\SQLEXPRESS;Database=LABA3;Integrated Security=SSPI";
 
-            // Открытие SQL-соединения с использованием строки подключения
+            // РћС‚РєСЂС‹С‚РёРµ SQL-СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј СЃС‚СЂРѕРєРё РїРѕРґРєР»СЋС‡РµРЅРёСЏ
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
 
-                // Определение команды SQL с параметрами
+                // РћРїСЂРµРґРµР»РµРЅРёРµ РєРѕРјР°РЅРґС‹ SQL СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
                 using (SqlCommand command = connection.CreateCommand())
                 {
                     command.CommandText = $"SELECT {currenciesName} ,date FROM exchange_rates WHERE date >= '{startDate.ToShortDateString()}' AND date <= '{endDate.ToShortDateString()}'";
 
-                    // Выполнение SQL-запроса и получение результатов
+                    // Р’С‹РїРѕР»РЅРµРЅРёРµ SQL-Р·Р°РїСЂРѕСЃР° Рё РїРѕР»СѓС‡РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        // Проход по каждой строке в результатах
+                        // РџСЂРѕС…РѕРґ РїРѕ РєР°Р¶РґРѕР№ СЃС‚СЂРѕРєРµ РІ СЂРµР·СѓР»СЊС‚Р°С‚Р°С…
                         while (reader.Read())
                         {
-                            // Проход по каждому столбцу в строке
+                            // РџСЂРѕС…РѕРґ РїРѕ РєР°Р¶РґРѕРјСѓ СЃС‚РѕР»Р±С†Сѓ РІ СЃС‚СЂРѕРєРµ
                             for (int i = 0; i < reader.FieldCount - 1; i++)
                             {
-                                // Если курс обмена равен null, пропустить этот столбец
+                                // Р•СЃР»Рё РєСѓСЂСЃ РѕР±РјРµРЅР° СЂР°РІРµРЅ null, РїСЂРѕРїСѓСЃС‚РёС‚СЊ СЌС‚РѕС‚ СЃС‚РѕР»Р±РµС†
                                 if (reader.IsDBNull(i))
                                 {
                                     continue;
                                 }
-                                // Получение имени валюты и курса обмена из строки
+                                // РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РІР°Р»СЋС‚С‹ Рё РєСѓСЂСЃР° РѕР±РјРµРЅР° РёР· СЃС‚СЂРѕРєРё
                                 string currencyName = reader.GetName(i);
                                 double exchangeRate = reader.GetDouble(i);
 
-                                // Проверка, существует ли валюта уже в списке, и обновление ее свойств, если она есть
+                                // РџСЂРѕРІРµСЂРєР°, СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё РІР°Р»СЋС‚Р° СѓР¶Рµ РІ СЃРїРёСЃРєРµ, Рё РѕР±РЅРѕРІР»РµРЅРёРµ РµРµ СЃРІРѕР№СЃС‚РІ, РµСЃР»Рё РѕРЅР° РµСЃС‚СЊ
                                 var existingCurrency = currencies.SingleOrDefault(c => c.CurrencyName == currencyName);
 
                                 if (existingCurrency == null)
@@ -79,13 +79,13 @@ public class CurrencyExchangeController : ControllerBase
                 }
             }
 
-            // Сериализация списка валют в JSON и возвращение его в виде строки
+            // РЎРµСЂРёР°Р»РёР·Р°С†РёСЏ СЃРїРёСЃРєР° РІР°Р»СЋС‚ РІ JSON Рё РІРѕР·РІСЂР°С‰РµРЅРёРµ РµРіРѕ РІ РІРёРґРµ СЃС‚СЂРѕРєРё
             var json = JsonSerializer.Serialize(currencies);
             return json.ToString();
         }
         catch (Exception ex)
         {
-            // Возврат любых сообщений об исключениях
+            // Р’РѕР·РІСЂР°С‚ Р»СЋР±С‹С… СЃРѕРѕР±С‰РµРЅРёР№ РѕР± РёСЃРєР»СЋС‡РµРЅРёСЏС…
             return ex.Message;
         }
     }
